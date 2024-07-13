@@ -1,11 +1,6 @@
 module HttpUtils {
 	public type HeaderField = (Text, Text);
 
-	public type Token = {
-		// Add whatever fields you'd like
-		arbitrary_data : Text;
-	};
-
 	public type HttpRequest = {
 		method : Text;
 		url : Text;

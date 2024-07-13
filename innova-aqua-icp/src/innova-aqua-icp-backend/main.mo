@@ -18,23 +18,25 @@ actor AquaInnovaBackend {
 
 	// Handles GET requests
 	public query func http_request(req : HttpUtils.HttpRequest) : async HttpUtils.HttpResponse {
+		Debug.print("main - http_request()");
 		Debug.print("req.method: " # req.method);
-		for (header in req.headers.vals()) {
-			Debug.print("header: " # header.0 # ": " # header.1);
-		};
+		for (header in req.headers.vals()) { Debug.print("header: " # header.0 # ": " # header.1); };
 		Debug.print("req.url: " # req.url);
 		switch (req.method, not Option.isNull(Array.find(req.headers, isJSON)), req.url) {
 			case ("GET", false, "/read") {
-				Debug.print("htt_request - case (GET, false, /read)");
+				Debug.print("http_request - case (GET, false, /read)");
+				let data_arr = Buffer.toArray(data);
+				let response = "[" # Text.join(",", data_arr.vals()) # "]";
 				{
 					status_code = 200;
 					headers = [("content-type", "application/json")];
-					body = Text.encodeUtf8("{ \"distance\": \"" # Nat.toText(1) # "\", \"capacity\": \"" # Nat.toText(1) # "\" }");
+					// body = Text.encodeUtf8("{ \"distance\": \"" # Nat.toText(1) # "\", \"capacity\": \"" # Nat.toText(1) # "\" }");
+					body = Text.encodeUtf8(response);
 					upgrade = ?false;
 				};
 			};
 			case ("GET", false, _) {
-				Debug.print("htt_request - case (GET, false, _)");
+				Debug.print("http_request - case (GET, false, _)");
 				{
 					status_code = 200;
 					headers = [("content-type", "application/json")];
@@ -43,7 +45,7 @@ actor AquaInnovaBackend {
 				};
 			};
 			case ("GET", true, _) {
-				Debug.print("htt_request - case (GET, true, _)");
+				Debug.print("http_request - case (GET, true, _)");
 				{
 					status_code = 200;
 					headers = [("content-type", "application/json"), ("content-encoding", "utf-8")];
@@ -51,9 +53,8 @@ actor AquaInnovaBackend {
 					upgrade = null;
 				};
 			};
-
 			case ("POST", _, _) {
-				Debug.print("htt_request - case (POST, _, _)");
+				Debug.print("http_request - case (POST, _, _)");
 				{
 					status_code = 204;
 					headers = [];
@@ -62,7 +63,7 @@ actor AquaInnovaBackend {
 				};
 			};
 			case _ {
-				Debug.print("htt_request - case (_)");
+				Debug.print("http_request - case (_)");
 				{
 					status_code = 400;
 					headers = [];
@@ -75,9 +76,13 @@ actor AquaInnovaBackend {
 
 	// Handles POST requests
 	public func http_request_update(req : HttpUtils.HttpRequest) : async HttpUtils.HttpResponse {
+		Debug.print("main - http_request_update()");
+		Debug.print("req.method: " # req.method);
+		for (header in req.headers.vals()) { Debug.print("header: " # header.0 # ": " # header.1); };
+		Debug.print("req.url: " # req.url);
 		switch (req.method, not Option.isNull(Array.find(req.headers, isJSON))) {
 			case ("POST", false) {
-				Debug.print("htt_request - case (POST, false)");
+				Debug.print("http_request_update - case (POST, false)");
 				var req_body = "";
 				switch (Text.decodeUtf8(req.body)) {
 					case null Debug.print("req.body is null");
@@ -93,7 +98,7 @@ actor AquaInnovaBackend {
 				};
 			};
 			case ("POST", true) {
-				Debug.print("htt_request - case (POST, true)");
+				Debug.print("http_request_update - case (POST, true)");
 				{
 					status_code = 201;
 					headers = [("content-type", "application/json"), ("content-encoding", "utf-8")];
@@ -102,7 +107,7 @@ actor AquaInnovaBackend {
 				};
 			};
 			case _ {
-				Debug.print("htt_request - case (_)");
+				Debug.print("http_request_update - case (_)");
 				{
 					status_code = 400;
 					headers = [];
