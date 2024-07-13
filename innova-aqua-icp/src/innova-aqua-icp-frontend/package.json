@@ -3,6 +3,7 @@
     "@dfinity/agent": "^0.20.0",
     "@dfinity/candid": "^0.20.0",
     "@dfinity/principal": "^0.20.0",
+    "chart.js": "^4.4.3",
     "lit-html": "^2.8.0"
   },
   "devDependencies": {
