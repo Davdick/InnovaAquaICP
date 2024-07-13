@@ -1,12 +1,15 @@
 import Prim "mo:⛔";
 import Array "mo:base/Array";
+import Blob "mo:base/Blob";
 import Bool "mo:base/Bool";
+import Char "mo:base/Char";
 import Debug "mo:base/Debug";
 import Nat "mo:base/Nat";
+import Nat16 "mo:base/Nat16";
+import Nat8 "mo:base/Nat8";
 import Option "mo:base/Option";
 import Prelude "mo:base/Prelude";
 import Text "mo:base/Text";
-import Blob "mo:base/Blob";
 
 import HttpUtils "utils/http-utils";
 
@@ -41,8 +44,8 @@ actor AquaInnovaBackend {
 				Debug.print("req.headers[0].1: " # req.headers[0].1);
 				let body_arr = Blob.toArray(req.body);
 				Debug.print("\niterating over body_arr\n");
-				for (e in body_arr.keys()) {
-					Debug.print("e: " # Nat.toText(e));
+				for (e in body_arr.vals()) {
+					Debug.print("e: " # Char.toText(Char.fromNat32(Nat16.toNat32(Nat8.toNat16(e)))));
 				};
 				{
 					status_code = 200;
@@ -88,6 +91,17 @@ actor AquaInnovaBackend {
 	public func http_request_update(req : HttpUtils.HttpRequest) : async HttpUtils.HttpResponse {
 		switch (req.method, not Option.isNull(Array.find(req.headers, isJSON))) {
 			case ("POST", false) {
+				Debug.print("htt_request - case (POST, false)");
+				Debug.print("req.headers[0].0: " # req.headers[0].0);
+				Debug.print("req.headers[0].1: " # req.headers[0].1);
+				let body_arr = Blob.toArray(req.body);
+				Debug.print("\niterating over body_arr\n");
+				for (e in body_arr.vals()) {
+					Debug.print("e: " # Char.toText(Char.fromNat32(Nat16.toNat32(Nat8.toNat16(e)))));
+				};
+				let body_mapped_arr = Array.map<Nat8, Text>(body_arr, func e = Char.toText(Char.fromNat32(Nat16.toNat32(Nat8.toNat16(e)))));
+				let parsed_body = Text.join("", body_mapped_arr.vals());
+				Debug.print("parsed_body: " # parsed_body);
 				{
 					status_code = 201;
 					headers = [("content-type", "application/json")];
