@@ -47,7 +47,8 @@ const char* password = "12345678";
 
 // URL de tu API
 const char* serverName = "https://jsonplaceholder.typicode.com/posts"; // Ajusta esto a la IP de tu servidor
-
+int initialPosition = 90;  // posición inicial del servo
+int targetPosition = 180;  // posición objetivo del servo
 void setup() {
   Serial.begin(115200);
   //SerialBT.begin(device_name);
@@ -63,7 +64,7 @@ void setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   // Iniciamos el servo para que empiece a trabajar con el pin 
-  servoMotor.attach(2);
+  servoMotor.attach(17);
  // #ifdef USE_PIN
   //SerialBT.setPin(pin);
   //Serial.println("Using PIN");
@@ -76,23 +77,8 @@ void setup() {
 }
 
 void loop() {
-  //ch=dht.readHumidity();
-  //ct=dht.readTemperature();
-  //if(isnan(ch) || isnan(ct)){
-  //  Serial.println(F("Failed to read from DHT11 sensor"));
-    //SerialBT.println(F("Failed to read from DHT11 sensor"));
-   // return;
- // }
- // if(ct!=pt || ch!=ph)
- // {
- // Serial.println("Humidity: "+String(ch)+"% Temperature: "+String(ct)+"°C");
-//  SerialBT.println("Humidity: "+String(ch)+"% Temperature: "+String(ct)+"°C");
-  //pt=ct;
-  //ph=ch;
-  //}
+  
 
-  
-  
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -112,7 +98,7 @@ void loop() {
           estadoServo = 0;
         }else if(distanceCm < 3.6){
           capacidad = false;
-         
+          
           estadoServo = 1;
         }
         String jsonData = "{\"Distance\": " + String(distanceCm, 2) + 
@@ -129,6 +115,8 @@ void loop() {
       //SerialBT.println("Distance (cm): "+String(distanceCm));
       if(estadoServo==1){
          ActivateServo();
+      }else{
+        DesActivateServo();
       }
   }
 
@@ -179,18 +167,21 @@ void Api(String jsonData){
 }
 
 void ActivateServo(){
-  // Desplazamos a la posición 0º
-  servoMotor.write(0);
+  // Desplazamos a la posición
+  Serial.println("Servo Motor Activado");
+  servoMotor.write(initialPosition);
   // Esperamos 1 segundo
   delay(1000);
   
-  // Desplazamos a la posición 90º
-  servoMotor.write(90);
-  // Esperamos 1 segundo
-  delay(1000);
+
   
-  // Desplazamos a la posición 180º
-  servoMotor.write(180);
+
+  
+}
+void DesActivateServo(){
+    // Desplazamos a la posición 180º
+  servoMotor.write(targetPosition);
   // Esperamos 1 segundo
   //delay(1000);
+  
 }
