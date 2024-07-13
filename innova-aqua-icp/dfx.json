@@ -1,0 +1,37 @@
+{
+  "canisters": {
+    "innova-aqua-icp-backend": {
+      "main": "src/innova-aqua-icp-backend/main.mo",
+      "type": "motoko"
+    },
+    "innova-aqua-icp-frontend": {
+      "dependencies": [
+        "innova-aqua-icp-backend"
+      ],
+      "source": [
+        "src/innova-aqua-icp-frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "innova-aqua-icp-frontend"
+    },
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "frontend": {},
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "vessel sources"
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
