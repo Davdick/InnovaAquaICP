@@ -12,6 +12,7 @@ String device_name="ESP32 InnovaAquaICP";
 const char *pin="1234";
 Servo servoMotor;
 int estadoServo = 0;
+int modServoC = 3;
 //#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 //#error Bluetooth is not enabled! Please run `make menuconfig` and enable it
 //#endif
@@ -46,9 +47,8 @@ const char* ssid = "Hackaton2";
 const char* password = "12345678";
 
 // URL de tu API
-const char* serverName = "https://jsonplaceholder.typicode.com/posts"; // Ajusta esto a la IP de tu servidor
-int initialPosition = 90;  // posición inicial del servo
-int targetPosition = 180;  // posición objetivo del servo
+const char* serverName = "https://unov5-rqaaa-aaaap-ahohq-cai.raw.icp0.io/update"; // Ajusta esto a la IP de tu servidor
+int currentPos = 0;  // posición objetivo del servo
 void setup() {
   Serial.begin(115200);
   //SerialBT.begin(device_name);
@@ -65,19 +65,10 @@ void setup() {
   pinMode(echoPin, INPUT); // Sets the echoPin as an Input
   // Iniciamos el servo para que empiece a trabajar con el pin 
   servoMotor.attach(17);
- // #ifdef USE_PIN
-  //SerialBT.setPin(pin);
-  //Serial.println("Using PIN");
-  //#endif
-  
- 
-  
-  
-  //Serial.println("DHT11 test!");
+
 }
 
 void loop() {
-  
 
   // Clears the trigPin
   digitalWrite(trigPin, LOW);
@@ -101,18 +92,15 @@ void loop() {
           
           estadoServo = 1;
         }
-        String jsonData = "{\"Distance\": " + String(distanceCm, 2) + 
-                    ", \"Capacity\": " + String(capacidad) + 
+        String jsonData = "{\"distance\": " + String(distanceCm, 2) + 
+                    ", \"capacity\": " + String(capacidad) + 
                     "}";
         Serial.println(jsonData);
         String jsonDataTest = "{\"title\":\"foo\",\"body\":\"bar\",\"userId\":1}";
-        Api(jsonDataTest);
+        Api(jsonData);
       }
       currentDistance = distanceCm;
-      // Prints the distance in the Serial Monitor
-      //Serial.print("Distance (cm): "+String(distanceCm));
-      //Serial.println(distanceCm);
-      //SerialBT.println("Distance (cm): "+String(distanceCm));
+      
       if(estadoServo==1){
          ActivateServo();
       }else{
@@ -168,20 +156,27 @@ void Api(String jsonData){
 
 void ActivateServo(){
   // Desplazamos a la posición
-  Serial.println("Servo Motor Activado");
-  servoMotor.write(initialPosition);
-  // Esperamos 1 segundo
-  delay(1000);
-  
-
-  
-
+  if(modServoC != estadoServo){
+       Serial.println("Servo Motor Activado CERRAR");
+      
+       for(int i = 180; i>0; i--){
+        servoMotor.write(i);
+        delay(10);
+     } 
+       
+  }
+  modServoC = estadoServo;  
   
 }
 void DesActivateServo(){
-    // Desplazamos a la posición 180º
-  servoMotor.write(targetPosition);
-  // Esperamos 1 segundo
-  //delay(1000);
-  
+  if(modServoC != estadoServo){
+     // Desplazamos a la posición 180º
+     Serial.println("Servo Motor Activado ABRIR");
+     for(int i = 0; i<=180; i++){
+          servoMotor.write(i);
+          delay(10);
+       }
+     modServoC = estadoServo;
+  }
+   
 }
